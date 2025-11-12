@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title or 'Flasky Secure App' }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav class="navbar animate-slide">
+      <div class="container">
+        <a class="brand" href="{{ url_for('login') }}">Flasky</a>
+        <ul>
+          {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('contacts') }}">Contacts</a></li>
+            <li><a href="{{ url_for('users') }}">Users</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+          {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+          {% endif %}
+          <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="container">
+      <section class="security-badges">
+        <span class="badge" title="CSRF protected forms">CSRF</span>
+        <span class="badge" title="Passwords hashed with bcrypt">bcrypt</span>
+        <span class="badge" title="CSP, HSTS, and headers via Talisman">CSP</span>
+        <span class="badge" title="HTTPOnly, SameSite cookies">Cookies</span>
+        <span class="badge" title="ORM parameterization">ORM</span>
+      </section>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flashes">
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div class="container">&copy; {{ 2025 }} Flasky Secure App</div>
+    </footer>
+  </body>
+  </html>
+
+

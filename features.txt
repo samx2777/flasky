@@ -1,0 +1,93 @@
+Flasky Secure App — Features and Security Overview
+
+1) App Features
+- Authentication:
+  - Signup (/signup) with unique username/email and password confirmation.
+  - Login (/login) and Logout (/logout) using Flask-Login.
+  - Passwords stored as bcrypt hashes (no plaintext).
+- Contacts:
+  - Contact form (/contact): name, email, phone, message.
+  - Contacts list (/contacts) requires login.
+  - Users list (/users) requires login.
+- UI:
+  - Clean, responsive UI with cards, subtle animations.
+  - Security badges displayed (CSRF, bcrypt, CSP, Cookies, ORM).
+- Errors:
+  - Custom 404 and 500 pages that don’t leak details.
+
+2) Tech Stack
+- Flask 3 + Flask-Login
+- Flask-WTF (forms + CSRF)
+- Flask-Bcrypt (password hashing)
+- Flask-SQLAlchemy (ORM with SQLite)
+- Flask-Talisman (security headers)
+- email-validator for email checks
+
+3) Security Controls (OWASP-Aligned)
+- Secure Password Storage:
+  - Bcrypt hashing; never store or compare plaintext.
+- CSRF Protection:
+  - Flask-WTF adds per-form CSRF tokens; all POSTs require valid token.
+- Input Validation & Sanitization:
+  - Length limits on fields.
+  - Email format validation.
+  - Phone regex (digits, +, (), -, spaces).
+  - Rejects “<” and “>” in free-text fields to block simple XSS payloads.
+  - Jinja auto-escapes output.
+- Parameterized Queries:
+  - SQLAlchemy ORM only; no raw SQL; parameters are bound.
+- Session Security:
+  - Cookies: HttpOnly, SameSite=Lax, and Secure (when COOKIE_SECURE=1 over HTTPS).
+  - Flask-Login session protection (strong).
+- Security Headers:
+  - Flask-Talisman sets a restrictive Content Security Policy (self script/style), frame protection (DENY).
+- Error Handling:
+  - Friendly 404/500 templates; stack traces disabled in production.
+
+4) How to Run (Windows PowerShell)
+- From project folder:
+  1. Create/activate venv:
+     python -m venv .venv
+     .\.venv\Scripts\Activate.ps1
+  2. Install:
+     pip install -r requirements.txt
+  3. Initialize DB (first run):
+     flask create-db
+  4. Start:
+     python app.py
+- Optional (dev mode for tracebacks):
+  $env:FLASK_APP="app:create_app"
+  $env:FLASK_DEBUG="1"
+  flask run
+
+5) How to Use
+- Signup at /signup, then login at /login.
+- Submit new contact at /contact.
+- View contacts at /contacts (login required).
+- View users at /users (login required).
+
+6) How to Verify Security
+- Password Hashing:
+  - Inspect app.db → user.password_hash is a bcrypt hash (not your password).
+- CSRF:
+  - Submit form via browser (works).
+  - Try POST without CSRF token (e.g., curl) → expect 400/CSRF failure.
+- Input Validation/XSS:
+  - Enter <script>alert(1)</script> into Name/Message → expect “HTML tags are not allowed.”
+  - Test long inputs → expect length validation errors.
+- SQL Injection:
+  - Enter email like: test@example.com' OR '1'='1 → email validator blocks; app remains stable.
+- Security Headers:
+  - Check Response Headers in DevTools: CSP present, X-Frame-Options/Frame-Options deny framing.
+- Session Cookies:
+  - After login, check cookies in DevTools:
+    - HttpOnly and SameSite=Lax present.
+    - Secure appears when running over HTTPS with COOKIE_SECURE=1.
+- Custom Errors:
+  - Visit a non-existing route (/nope) → friendly 404 without stack traces.
+
+7) Notes & Options
+- HTTPS:
+  - For production, set COOKIE_SECURE=1 and provide a strong SECRET_KEY.
+- Per-User Contacts (optional):
+  - Can link contacts to the logged-in user so each user only sees their own items (available on request).

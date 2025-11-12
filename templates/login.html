@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Log In</h1>
+<form method="post" novalidate class="card animate-pop">
+  {{ form.hidden_tag() }}
+  <div class="form-group">
+    {{ form.username.label }}
+    {{ form.username(class_='input') }}
+    {% for error in form.username.errors %}<div class="error">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="form-group">
+    {{ form.password.label }}
+    {{ form.password(class_='input') }}
+    {% for error in form.password.errors %}<div class="error">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="form-group-inline">
+    {{ form.remember_me() }} {{ form.remember_me.label }}
+  </div>
+  <div class="form-actions">
+    {{ form.submit(class_='btn') }}
+  </div>
+  <p class="hint">Use the CLI to create a user securely: see README.</p>
+{% endblock %}
+
+

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Contact Us</h1>
+<form method="post" novalidate class="card animate-pop">
+  {{ form.hidden_tag() }}
+  <div class="form-grid">
+    <div class="form-group">
+      {{ form.name.label }}
+      {{ form.name(class_='input') }}
+      {% for error in form.name.errors %}<div class="error">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="form-group">
+      {{ form.email.label }}
+      {{ form.email(class_='input') }}
+      {% for error in form.email.errors %}<div class="error">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="form-group">
+      {{ form.phone.label }}
+      {{ form.phone(class_='input') }}
+      {% for error in form.phone.errors %}<div class="error">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="form-group span-2">
+      {{ form.message.label }}
+      {{ form.message(class_='textarea') }}
+      {% for error in form.message.errors %}<div class="error">{{ error }}</div>{% endfor %}
+    </div>
+  </div>
+  <div class="form-actions">
+    {{ form.submit(class_='btn') }}
+  </div>
+</form>
+{% endblock %}
+
+
