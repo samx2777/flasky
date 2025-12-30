@@ -32,7 +32,7 @@ pipeline {
                 echo 'Running unit tests using pytest...'
                 bat '''
                     call %VENV_DIR%\\Scripts\\activate
-                    pytest
+                    python -m pytest
                 '''
             }
         }
@@ -71,4 +71,3 @@ pipeline {
         }
     }
 }
-
