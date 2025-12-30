@@ -15,23 +15,14 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install & Test') {
             steps {
-                echo 'Installing Python dependencies...'
+                echo 'Installing dependencies and running tests...'
                 bat '''
                     python -m venv %VENV_DIR%
                     call %VENV_DIR%\\Scripts\\activate
-                    pip install --upgrade pip
+                    python -m pip install --upgrade pip
                     pip install -r requirements.txt
-                '''
-            }
-        }
-
-        stage('Run Unit Tests') {
-            steps {
-                echo 'Running unit tests using pytest...'
-                bat '''
-                    call %VENV_DIR%\\Scripts\\activate
                     python -m pytest
                 '''
             }
