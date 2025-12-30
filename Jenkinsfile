@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         VENV_DIR = "venv"
-        DEPLOY_DIR = "/tmp/flask-deploy"
+        DEPLOY_DIR = "C:\\tmp\\flask-deploy"
     }
 
     stages {
@@ -18,9 +18,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Python dependencies...'
-                sh '''
-                    python3 -m venv ${VENV_DIR}
-                    . ${VENV_DIR}/bin/activate
+                bat '''
+                    python -m venv %VENV_DIR%
+                    call %VENV_DIR%\\Scripts\\activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
@@ -30,8 +30,8 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 echo 'Running unit tests using pytest...'
-                sh '''
-                    . ${VENV_DIR}/bin/activate
+                bat '''
+                    call %VENV_DIR%\\Scripts\\activate
                     pytest
                 '''
             }
@@ -40,9 +40,11 @@ pipeline {
         stage('Build Application') {
             steps {
                 echo 'Preparing application for deployment...'
-                sh '''
-                    mkdir -p build
-                    cp -r app.py requirements.txt build/
+                bat '''
+                    if exist build rmdir /s /q build
+                    mkdir build
+                    copy app.py build\\
+                    copy requirements.txt build\\
                 '''
             }
         }
@@ -50,11 +52,11 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 echo 'Simulating deployment...'
-                sh '''
-                    rm -rf ${DEPLOY_DIR}
-                    mkdir -p ${DEPLOY_DIR}
-                    cp -r build/* ${DEPLOY_DIR}/
-                    echo "Application deployed to ${DEPLOY_DIR}"
+                bat '''
+                    if exist %DEPLOY_DIR% rmdir /s /q %DEPLOY_DIR%
+                    mkdir %DEPLOY_DIR%
+                    xcopy build %DEPLOY_DIR% /E /I /Y
+                    echo Application deployed to %DEPLOY_DIR%
                 '''
             }
         }
@@ -69,3 +71,4 @@ pipeline {
         }
     }
 }
+
